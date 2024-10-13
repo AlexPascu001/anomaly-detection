@@ -21,7 +21,9 @@ clf.fit(X_train)
 
 print("For training data:")
 y_train_pred = clf.predict(X_train)
+y_train_scores = clf.decision_function(X_train)
 y_test_pred = clf.predict(X_test)
+y_test_scores = clf.decision_function(X_test)
 
 cm_1 = confusion_matrix(y_train, y_train_pred)
 print(cm_1)
@@ -34,7 +36,7 @@ tnr = tn / (tn + fp)
 ba = (tpr + tnr) / 2
 print(f"TPR: {tpr}, TNR: {tnr}, BA: {ba}")
 
-roc = roc_curve(y_test, y_test_pred)
+roc = roc_curve(y_train, y_train_scores)
 plt.plot(roc[0], roc[1])
 plt.show()
 auc = sklearn.metrics.auc(roc[0], roc[1])
@@ -51,7 +53,7 @@ tnr = tn / (tn + fp)
 ba = (tpr + tnr) / 2
 print(f"TPR: {tpr}, TNR: {tnr}, BA: {ba}")
 
-roc = roc_curve(y_test, y_test_pred)
+roc = roc_curve(y_test, y_test_scores)
 plt.plot(roc[0], roc[1])
 plt.show()
 auc = sklearn.metrics.auc(roc[0], roc[1])
