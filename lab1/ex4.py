@@ -8,8 +8,10 @@ data = np.random.multivariate_normal(mean, cov, n_samples)
 
 new_cov = np.array([[1.0, 0.6], [0.6, 2.0]])
 mean_shifted = np.array([0.0, 0.0])
+anomalous_samples = int(n_samples * 0.1)
+shifted_data = np.random.multivariate_normal(mean_shifted, new_cov, anomalous_samples)
 
-shifted_data = np.random.multivariate_normal(mean_shifted, new_cov, n_samples)
+combined_data = np.vstack([data, shifted_data])
 
 L = np.linalg.cholesky(new_cov)
 
@@ -19,22 +21,17 @@ def z_score(x, mean, L):
     distance = np.dot(f.T, f)
     return np.sqrt(distance)
 
-z_scores = np.array([z_score(x, mean_shifted, L) for x in shifted_data])
+z_scores = np.array([z_score(x, mean_shifted, L) for x in combined_data])
 
 contamination = 0.1
 threshold = np.quantile(z_scores, 1 - contamination)
 
 predicted_anomalies = (z_scores > threshold).astype(int)
 
-true_labels = np.ones(len(shifted_data))
-predicted_labels = predicted_anomalies
+true_labels = np.zeros(len(combined_data))
+true_labels[-anomalous_samples:] = 1  # Last 10% are anomalies
 
-true_labels = np.concatenate([np.zeros(len(data)), true_labels])
-
-predicted_labels_normal = np.zeros(len(data))
-predicted_labels = np.concatenate([predicted_labels_normal, predicted_labels])
-
-cm = confusion_matrix(true_labels, predicted_labels)
+cm = confusion_matrix(true_labels, predicted_anomalies)
 tn, fp, fn, tp = cm.ravel()
 tnr = tn / (tn + fp)
 tpr = tp / (tp + fn)
