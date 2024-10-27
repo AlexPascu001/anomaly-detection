@@ -17,7 +17,7 @@ def compute_leverage_scores(X):
 
 def plot_with_leverage_scores(X, y, leverage_scores, title, ax):
     ax.scatter(X[:, 1], y, color="blue", label="Data Points")
-    high_leverage_points = leverage_scores > np.percentile(leverage_scores, 90)
+    high_leverage_points = leverage_scores > X.shape[1] / n_points
     ax.scatter(X[high_leverage_points, 1], y[high_leverage_points], color="red", label="High Leverage")
     ax.set_title(title)
     ax.legend()
