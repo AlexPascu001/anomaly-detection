@@ -3,6 +3,9 @@ from pyod.models.knn import KNN
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 
+import matplotlib
+matplotlib.use('TkAgg')
+
 n_train = 400
 n_test = 200
 n_clusters = 2
@@ -11,7 +14,7 @@ contamination = 0.1
 
 X_train, X_test, y_train, y_test = generate_data_clusters(n_train=n_train, n_test=n_test, n_clusters=n_clusters, n_features=n_features, contamination=contamination, random_state=112)
 
-clf = KNN(contamination=contamination, n_neighbors=5)
+clf = KNN(contamination=contamination, n_neighbors=15)
 clf.fit(X_train)
 
 fig, axes = plt.subplots(2, 2, figsize=(10, 10))
