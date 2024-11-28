@@ -15,15 +15,17 @@ contamination_rate = 0.096  # From dataset description
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.6, random_state=112)
 
-scaler = StandardScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
-
-param_grid = {
-    'ocsvm__nu': np.linspace(0.01, 0.1, 10),
-    'ocsvm__gamma': ['scale', 'auto'],
-    'ocsvm__kernel': ['rbf', 'poly', 'sigmoid', 'linear']
-}
+param_grid = [
+    {
+        'ocsvm__nu': np.linspace(0.01, 0.1, 10),
+        'ocsvm__gamma': ['scale', 'auto'],
+        'ocsvm__kernel': ['rbf', 'poly', 'sigmoid']
+    },
+    {
+        'ocsvm__nu': np.linspace(0.01, 0.1, 10),
+        'ocsvm__kernel': ['linear']
+    }
+]
 
 pipeline = Pipeline(steps=[
     ('scaler', StandardScaler()),
@@ -46,7 +48,7 @@ grid_search = GridSearchCV(
     param_grid=param_grid,
     cv=5,
     n_jobs=-1,
-    scoring=custom_balanced_accuracy  # Pass the custom function directly
+    scoring=custom_balanced_accuracy
 )
 grid_search.fit(X_train, y_train)  # Use pyod format (0, 1) for true labels
 
@@ -65,6 +67,3 @@ y_test_sklearn[y_test == 1] = -1
 
 balanced_accuracy = balanced_accuracy_score(y_test_sklearn, y_pred)
 print(f"Balanced Accuracy on Test Set: {balanced_accuracy}")
-
-print("Test Label Distribution (y_test_sklearn):", np.unique(y_test_sklearn, return_counts=True))
-print("Predicted Label Distribution (y_pred):", np.unique(y_pred, return_counts=True))
